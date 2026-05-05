@@ -1,0 +1,16 @@
+{
+  "name": "std/log",
+  "version": "0.1.0",
+  "license": "ISC",
+  "build": {
+    "native": {
+      "sourceFiles": [
+        "./doof_log.cpp"
+      ],
+      "extraCopyPaths": [
+        "./doof_log.hpp"
+      ]
+    }
+  },
+  "dependencies": {}
+}
