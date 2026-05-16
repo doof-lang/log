@@ -49,6 +49,7 @@ export import class RollingFileLogger from "doof_log.hpp" as doof_log::RollingFi
   maxAge: Duration | null
   maxFiles: int
   log(entry: LogEntry): void
+  flush(): void
 }
 
 function _log(level: LogLevel, message: string, context: readonly Map<string, LogValue>, source: SourceLocation): void {

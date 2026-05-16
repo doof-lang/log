@@ -286,6 +286,16 @@ void RollingFileLogger::flushStream() {
     }
 }
 
+void RollingFileLogger::flush() {
+    const int64_t now = std::chrono::duration_cast<std::chrono::nanoseconds>(
+        std::chrono::system_clock::now().time_since_epoch()
+    ).count();
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    initializeIfNeeded(now);
+    flushStream();
+}
+
 void RollingFileLogger::log(std::shared_ptr<LogEntry> entry) {
     if (level_rank(entry->level) < level_rank(level)) {
         return;

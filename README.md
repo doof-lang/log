@@ -60,6 +60,8 @@ setLogger(logger)
 
 `RollingFileLogger(path, level, maxBytes, maxAge, maxFiles)` rotates the active file when either threshold is exceeded.
 
+Call `logger.flush()` to force buffered log data to be written to disk immediately.
+
 Rotation behavior:
 
 - The active file at `path` is renamed to `path.1`.

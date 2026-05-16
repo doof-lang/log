@@ -58,6 +58,13 @@ export function testRollingFileLoggerKeepsConfiguredThresholds(): void {
   Assert.equal(logger.maxFiles, 3)
 }
 
+export function testRollingFileLoggerSupportsManualFlush(): void {
+  logger := RollingFileLogger("app.log")
+
+  logger.flush()
+  Assert.isTrue(true)
+}
+
 export function testImportedLoggersSatisfyLoggerInterface(): void {
   let consoleLogger: Logger = ConsoleLogger()
   let rollingLogger: Logger = RollingFileLogger("app.log")

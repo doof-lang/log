@@ -58,6 +58,7 @@ public:
 	}
 
 	void log(std::shared_ptr<LogEntry> entry);
+	void flush();
 
 private:
 	void initializeIfNeeded(int64_t now);
