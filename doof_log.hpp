@@ -23,7 +23,7 @@ public:
 	explicit ConsoleLogger(LogLevel level = static_cast<LogLevel>(1))
 		: level(level) {}
 
-	static std::shared_ptr<ConsoleLogger> create(LogLevel level = static_cast<LogLevel>(1)) {
+	static std::shared_ptr<ConsoleLogger> constructor(LogLevel level = static_cast<LogLevel>(1)) {
 		return std::make_shared<ConsoleLogger>(level);
 	}
 
@@ -47,7 +47,7 @@ public:
 	)
 		: path(std::move(path)), level(level), maxBytes(std::move(maxBytes)), maxAge(std::move(maxAge)), maxFiles(maxFiles) {}
 
-	static std::shared_ptr<RollingFileLogger> create(
+	static std::shared_ptr<RollingFileLogger> constructor(
 		std::string path,
 		LogLevel level = static_cast<LogLevel>(1),
 		std::optional<int64_t> maxBytes = std::nullopt,
