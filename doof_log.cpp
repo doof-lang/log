@@ -219,7 +219,7 @@ void dispatch(std::shared_ptr<LogEntry> entry) {
         return;
     }
 
-    sink(std::move(entry));
+    sink.call(std::move(entry));
 }
 
 void ConsoleLogger::log(std::shared_ptr<LogEntry> entry) {

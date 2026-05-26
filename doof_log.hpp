@@ -74,7 +74,7 @@ private:
 	std::ofstream stream_;
 };
 
-using LogSink = std::function<void(std::shared_ptr<LogEntry>)>;
+using LogSink = doof::callback<void(std::shared_ptr<LogEntry>)>;
 
 void setSink(LogSink sink);
 void dispatch(std::shared_ptr<LogEntry> entry);
