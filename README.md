@@ -4,6 +4,11 @@ Structured application logging for Doof. The package exposes a small global logg
 
 Logs are only emitted after you install a logger with `setLogger(...)`. Without a configured logger, `debug(...)`, `info(...)`, `warn(...)`, and `error(...)` are no-ops. `fatal(...)` still panics after attempting to dispatch the log entry.
 
+## Documentation
+
+- [Guide and API reference](docs/API.md) explains logger installation, structured context, severity filtering, console/file loggers, custom loggers, and fatal behavior.
+- Tests can be run with `doof test log`.
+
 ## Quick Start
 
 ```doof
