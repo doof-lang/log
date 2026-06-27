@@ -54,7 +54,7 @@ export function testRollingFileLoggerKeepsConfiguredThresholds(): void {
 
   Assert.equal(logger.level, LogLevel.Debug)
   Assert.equal(maxBytes, 1024L)
-  Assert.equal(maxAge.toMinutes(), 5L)
+  Assert.equal(maxAge.toMinutes(), 5.0)
   Assert.equal(logger.maxFiles, 3)
 }
 
