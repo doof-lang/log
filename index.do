@@ -30,13 +30,13 @@ export function setLogger(logger: Logger): void {
 }
 
 export import class ConsoleLogger from "doof_log.hpp" as doof_log::ConsoleLogger {
-  static constructor(level: LogLevel = .Info): ConsoleLogger
+  isolated static constructor(level: LogLevel = .Info): ConsoleLogger
   level: LogLevel
-  log(entry: LogEntry): void
+  isolated log(entry: LogEntry): void
 }
 
 export import class RollingFileLogger from "doof_log.hpp" as doof_log::RollingFileLogger {
-  static constructor(
+  isolated static constructor(
     path: string,
     level: LogLevel = .Info,
     maxBytes: long | null = null,
@@ -48,8 +48,8 @@ export import class RollingFileLogger from "doof_log.hpp" as doof_log::RollingFi
   maxBytes: long | null
   maxAge: Duration | null
   maxFiles: int
-  log(entry: LogEntry): void
-  flush(): void
+  isolated log(entry: LogEntry): void
+  isolated flush(): void
 }
 
 function _log(level: LogLevel, message: string, context: readonly Map<string, LogValue>, source: SourceLocation): void {
