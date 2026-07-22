@@ -3,17 +3,17 @@ import { Duration, Instant } from "std/time"
 
 import { ConsoleLogger, LogEntry, LogLevel, Logger, RollingFileLogger } from "../index"
 
-export function testLogLevelOrdering(): void {
+export function testLogLevelOrdering(): none {
   Assert.isTrue(LogLevel.Debug < LogLevel.Info)
   Assert.isTrue(LogLevel.Warn > LogLevel.Info)
   Assert.isTrue(LogLevel.Fatal > LogLevel.Error)
 }
 
-export function testLogEntryStoresTypedFields(): void {
+export function testLogEntryStoresTypedFields(): none {
   entry := LogEntry {
     level: LogLevel.Info,
     message: "Server started",
-    context: { "port": 8080, "host": "127.0.0.1", "secure": null },
+    context: { "port": 8080, "host": "127.0.0.1", "secure": none },
     source: SourceLocation("main", 12, "main"),
     timestamp: Instant.now(),
   }
@@ -25,23 +25,23 @@ export function testLogEntryStoresTypedFields(): void {
   Assert.equal(entry.source.line, 12)
 }
 
-export function testConsoleLoggerDefaults(): void {
+export function testConsoleLoggerDefaults(): none {
   logger := ConsoleLogger()
 
   Assert.equal(logger.level, LogLevel.Info)
 }
 
-export function testRollingFileLoggerDefaults(): void {
+export function testRollingFileLoggerDefaults(): none {
   logger := RollingFileLogger("app.log")
 
   Assert.equal(logger.path, "app.log")
   Assert.equal(logger.level, LogLevel.Info)
-  Assert.isTrue(logger.maxBytes == null)
-  Assert.isTrue(logger.maxAge == null)
+  Assert.isTrue(logger.maxBytes == none)
+  Assert.isTrue(logger.maxAge == none)
   Assert.equal(logger.maxFiles, 5)
 }
 
-export function testRollingFileLoggerKeepsConfiguredThresholds(): void {
+export function testRollingFileLoggerKeepsConfiguredThresholds(): none {
   logger := RollingFileLogger("app.log", LogLevel.Debug, 1024L, Duration.ofMinutes(5L), 3)
   maxBytes := logger.maxBytes as long else {
     Assert.fail("expected maxBytes to be set")
@@ -58,14 +58,14 @@ export function testRollingFileLoggerKeepsConfiguredThresholds(): void {
   Assert.equal(logger.maxFiles, 3)
 }
 
-export function testRollingFileLoggerSupportsManualFlush(): void {
+export function testRollingFileLoggerSupportsManualFlush(): none {
   logger := RollingFileLogger("app.log")
 
   logger.flush()
   Assert.isTrue(true)
 }
 
-export function testImportedLoggersSatisfyLoggerInterface(): void {
+export function testImportedLoggersSatisfyLoggerInterface(): none {
   let consoleLogger: Logger = ConsoleLogger()
   let rollingLogger: Logger = RollingFileLogger("app.log")
 
