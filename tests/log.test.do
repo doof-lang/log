@@ -1,7 +1,17 @@
 import { Assert } from "std/assert"
+import { remove } from "std/fs"
+import { pid } from "std/os"
+import { join, tempDirectory } from "std/path"
 import { Duration, Instant } from "std/time"
 
 import { ConsoleLogger, LogEntry, LogLevel, Logger, RollingFileLogger } from "../index"
+
+function callerSource(source: SourceLocation = @caller): SourceLocation => source
+
+function flushFile(path: string): none {
+  logger := RollingFileLogger(path)
+  logger.flush()
+}
 
 export function testLogLevelOrdering(): none {
   Assert.isTrue(LogLevel.Debug < LogLevel.Info)
@@ -14,15 +24,15 @@ export function testLogEntryStoresTypedFields(): none {
     level: LogLevel.Info,
     message: "Server started",
     context: { "port": 8080, "host": "127.0.0.1", "secure": none },
-    source: SourceLocation("main", 12, "main"),
+    source: callerSource(),
     timestamp: Instant.now(),
   }
 
   Assert.equal(entry.level, LogLevel.Info)
   Assert.equal(entry.message, "Server started")
   Assert.isTrue(entry.context.has("port"))
-  Assert.equal(entry.source.fileName, "main")
-  Assert.equal(entry.source.line, 12)
+  Assert.stringContains(entry.source.fileName, "log.test")
+  Assert.isTrue(entry.source.line > 0)
 }
 
 export function testConsoleLoggerDefaults(): none {
@@ -59,10 +69,10 @@ export function testRollingFileLoggerKeepsConfiguredThresholds(): none {
 }
 
 export function testRollingFileLoggerSupportsManualFlush(): none {
-  logger := RollingFileLogger("app.log")
+  path := join([tempDirectory(), "std-log-manual-flush-${pid()}.log"])
 
-  logger.flush()
-  Assert.isTrue(true)
+  flushFile(path)
+  try! remove(path)
 }
 
 export function testImportedLoggersSatisfyLoggerInterface(): none {
