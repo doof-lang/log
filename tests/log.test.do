@@ -4,7 +4,12 @@ import { pid } from "std/os"
 import { join, tempDirectory } from "std/path"
 import { Duration, Instant } from "std/time"
 
-import { ConsoleLogger, LogEntry, LogLevel, Logger, RollingFileLogger } from "../index"
+import { ConsoleLogger, LogEntry, LogLevel, Logger, RollingFileLogger, info, setLogger } from "../index"
+
+class CapturingLogger implements Logger {
+  let last: LogEntry | none = none
+  log(entry: LogEntry): none { last = entry }
+}
 
 function callerSource(source: SourceLocation = @caller): SourceLocation => source
 
@@ -80,4 +85,20 @@ export function testImportedLoggersSatisfyLoggerInterface(): none {
   let rollingLogger: Logger = RollingFileLogger("app.log")
 
   Assert.isTrue(true)
+}
+
+export function testApplicationLoggerStillReceivesDispatchedEntries(): none {
+  logger := CapturingLogger {}
+  setLogger(logger)
+  info("additive observer tap", { "request": 7 })
+  entry := logger.last as LogEntry else {
+    Assert.fail("expected the application logger to receive the entry")
+    return
+  }
+  Assert.equal(entry.message, "additive observer tap")
+  value := try! entry.context.get("request")
+  case value {
+    count: int -> { Assert.equal(count, 7) }
+    _ -> { Assert.fail("expected integer log context") }
+  }
 }

@@ -1,6 +1,7 @@
 #include "index.hpp"
 
 #include <chrono>
+#include <cmath>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
@@ -52,6 +53,53 @@ const char* level_label(LogLevel level) {
 
     return "UNKWN";
 }
+
+#if defined(DOOF_OBSERVE)
+const char* level_event_label(LogLevel level) {
+    switch (level) {
+        case LogLevel::Debug: return "debug";
+        case LogLevel::Info: return "info";
+        case LogLevel::Warn: return "warn";
+        case LogLevel::Error: return "error";
+        case LogLevel::Fatal: return "fatal";
+    }
+    return "unknown";
+}
+
+std::string log_value_json(const LogValue& value) {
+    return std::visit([](const auto& current) -> std::string {
+        using Current = std::decay_t<decltype(current)>;
+        if constexpr (std::is_same_v<Current, std::monostate>) {
+            return "null";
+        } else if constexpr (std::is_same_v<Current, bool>) {
+            return current ? "true" : "false";
+        } else if constexpr (std::is_same_v<Current, std::string>) {
+            return "\"" + doof::observe::json_escape(current) + "\"";
+        } else if constexpr (std::is_floating_point_v<Current>) {
+            return std::isfinite(current) ? doof::to_string(current) : "null";
+        } else {
+            return doof::to_string(current);
+        }
+    }, value);
+}
+
+std::string event_json(std::shared_ptr<LogEntry> entry) {
+    std::ostringstream out;
+    out << "{\"level\":\"" << level_event_label(entry->level)
+        << "\",\"message\":\"" << doof::observe::json_escape(entry->message)
+        << "\",\"timestamp\":\"" << doof::observe::json_escape(entry->timestamp->toISOString())
+        << "\",\"source\":{\"file\":\"" << doof::observe::json_escape(entry->source->fileName)
+        << "\",\"line\":" << entry->source->line << "},\"context\":{";
+    bool first = true;
+    for (const auto& [key, value] : *entry->context) {
+        if (!first) out << ',';
+        first = false;
+        out << '\"' << doof::observe::json_escape(key) << "\":" << log_value_json(value);
+    }
+    out << "}}";
+    return out.str();
+}
+#endif
 
 bool stderr_is_tty() {
 #if defined(_WIN32)
@@ -209,6 +257,11 @@ void setSink(LogSink sink) {
 }
 
 void dispatch(std::shared_ptr<LogEntry> entry) {
+#if defined(DOOF_OBSERVE)
+    // Observability is an additive tap: application logger selection and
+    // delivery remain unchanged.
+    try { doof::observe::publish_event("log", event_json(entry)); } catch (...) { }
+#endif
     LogSink sink;
     {
         std::lock_guard<std::mutex> lock(sink_mutex());
