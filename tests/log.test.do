@@ -77,7 +77,7 @@ export function testRollingFileLoggerSupportsManualFlush(): none {
   path := join([tempDirectory(), "std-log-manual-flush-${pid()}.log"])
 
   flushFile(path)
-  try! remove(path)
+  remove(path)!
 }
 
 export function testImportedLoggersSatisfyLoggerInterface(): none {
@@ -96,7 +96,7 @@ export function testApplicationLoggerStillReceivesDispatchedEntries(): none {
     return
   }
   Assert.equal(entry.message, "additive observer tap")
-  value := try! entry.context.get("request")
+  value := entry.context.get("request")!
   case value {
     count: int -> { Assert.equal(count, 7) }
     _ -> { Assert.fail("expected integer log context") }
